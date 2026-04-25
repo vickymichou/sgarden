@@ -166,11 +166,18 @@ router.post("/load-plugin", (req, res) => {
 	try {
 		const { pluginName } = req.body;
 
+		
 		if (!pluginName) {
-			return res.status(400).json({ message: "Plugin name required" });
-		}
+        return res.status(400).json({ message: "Plugin name required" });
+    }
 
-		const plugin = require(pluginName);
+         // Λίστα με επιτρεπόμενα plugins
+        const allowedPlugins = ['logger', 'auth', 'validator']; 
+           if (!allowedPlugins.includes(pluginName)) {
+               return res.status(403).json({ message: "Invalid or unauthorized plugin!" });
+    }
+
+        const plugin = require(`./plugins/${pluginName}`); // Πάντα με πρόθεμα φακέλου για ασφάλεια
 
 		return res.json({ 
 			success: true, 
