@@ -87,15 +87,16 @@ const npmCmd = isWindows ? 'npm.cmd' : 'npm';
 const spawned = [];
 
 function startService(service) {
-  log(yellow(`  ⚡  Starting ${service.name} (npm run ${service.script})…`));
+  // 1. Έλεγχος ασφαλείας: Επιτρέπουμε μόνο συγκεκριμένα scripts
+  const validScripts = ['start', 'dev', 'test', 'smoke']; 
+  if (!validScripts.includes(service.script)) {
+    throw new Error(`Invalid service script: ${service.script}`);
+  }
+
+  log(yellow(`  ⚡  Starting ${service.name} (npm run ${service.script})...`));
+  
+  // 2. Τώρα το spawn θεωρείται ασφαλές
   const child = spawn(npmCmd, ['run', service.script], {
-    cwd:      ROOT,
-    detached: true,
-    stdio:    'ignore',
-    env:      { ...process.env, ...service.env },
-    shell:    isWindows,
-    ...(isWindows && { windowsHide: true }),
-  });
   child.unref();
   spawned.push(child);
   return child;
@@ -162,7 +163,7 @@ const smoke = spawn(npmCmd, ['run', 'smoke:test'], {
   cwd:   ROOT,
   stdio: [process.stdin, process.stdout, process.stderr],
   env:   process.env,
-  shell: isWindows,
+  shell: false,
 });
 
 smoke.on('error', (err) => {
