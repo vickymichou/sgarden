@@ -229,7 +229,13 @@ router.post("/system/spawn", (req, res) => {
 
 		const { spawn } = require("child_process");
 
-		const process = spawn(cmd, args || []);
+// Έλεγχος ασφαλείας για να ξέρει ο server ποιες εντολές επιτρέπονται
+const allowedCommands = ['echo', 'ls', 'ping']; 
+if (!allowedCommands.includes(cmd)) {
+    return res.status(403).json({ message: "Command not allowed!" });
+}
+
+     const process = spawn(cmd, args || []);
 
 		let output = '';
 		process.stdout.on('data', (data) => {
@@ -252,15 +258,15 @@ router.post("/compress-files", (req, res) => {
 			return res.status(400).json({ message: "Filename and output name required" });
 		}
 
-		const { exec } = require("child_process");
+		const { execFile } = require("child_process");
 
 		// Direct string concatenation in shell command
-		exec(`zip -r ${outputName}.zip ./files/${filename}`, (error, _, __) => {
+		execFile("zip", ["-r", `${outputName}.zip`, `./files/${filename}`], (error, _, __) => {	
 			if (error) {
 				return res.status(500).json({ message: "Compression failed" });
 			}
 			return res.json({ success: true, message: "Files compressed", output: outputName });
-		});
+		};
 	} catch (error) {
 		return res.status(500).json({ message: "Something went wrong." });
 	}
