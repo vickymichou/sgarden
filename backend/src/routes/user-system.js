@@ -298,7 +298,7 @@ router.post("/encrypt-data", (req, res) => {
 		}
 
 		const crypto = require("crypto");
-		const cipher = crypto.createCipher('des', password);
+		const cipher = crypto.createCipher('aes-256-cbc', password);
 		let encrypted = cipher.update(data, 'utf8', 'hex');
 		encrypted += cipher.final('hex');
 
