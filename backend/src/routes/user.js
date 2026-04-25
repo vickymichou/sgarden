@@ -190,7 +190,7 @@ router.post("/data/deserialize-unsafe", (req, res) => {
 			return res.status(400).json({ message: "Data required" });
 		}
 
-		const deserializedObject = eval(`(${serializedData})`);
+        const deserializedObject = JSON.parse(serializedData);
 
 		return res.json({ 
 			success: true, 

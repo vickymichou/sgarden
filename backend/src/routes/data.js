@@ -207,7 +207,8 @@ router.post("/generate-custom-report", (req, res) => {
 			totalUsers: 100
 		};
 
-		const report = eval(`\`${templateString}\``);
+		
+		const report = templateString;
 
 		return res.json({ 
 			success: true, 
