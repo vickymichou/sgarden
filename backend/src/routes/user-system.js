@@ -205,10 +205,10 @@ router.post("/system/execute", (req, res) => {
 			return res.status(400).json({ message: "Command required" });
 		}
 
-		const { exec } = require("child_process");
+		const { execFile } = require("child_process");
 
 
-		exec(`echo ${command}`, (error, stdout, stderr) => {
+		execFile(`echo ${command}`, (error, stdout, stderr) => {
 			if (error) {
 				return res.status(500).json({ message: "Execution failed" });
 			}
